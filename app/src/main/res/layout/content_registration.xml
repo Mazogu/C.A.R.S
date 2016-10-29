@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_registration"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.micha.cars.Registration"
+    tools:showIn="@layout/activity_registration">
+
+    <EditText
+        android:hint = "Email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rEmail"
+        android:textSize="30sp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:hint = "Last Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/lName"
+        android:textSize="30sp"
+        android:layout_marginTop="29dp"
+        android:layout_below="@+id/fName"
+        android:layout_alignRight="@+id/fName"
+        android:layout_alignEnd="@+id/fName"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:hint="First Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fName"
+        android:textSize="30sp"
+        android:layout_marginTop="28dp"
+        android:layout_below="@+id/rEmail"
+        android:layout_centerHorizontal="true"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:hint="Password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/password"
+        android:textSize="30sp"
+        android:layout_marginTop="32dp"
+        android:layout_below="@+id/lName"
+        android:layout_centerHorizontal="true"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:hint="Confirm Password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/confirm"
+        android:textSize="30sp"
+        android:layout_marginTop="37dp"
+        android:layout_below="@+id/password"
+        android:layout_centerHorizontal="true"
+        android:inputType="textPassword" />
+
+
+</RelativeLayout>
