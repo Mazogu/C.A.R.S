@@ -33,7 +33,7 @@
             android:label="Registration"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ScrollingActivity"
+            android:name=".ClassRoomActivity"
             android:label="Quantum Theory"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -47,19 +47,19 @@
         <activity
             android:name=".QuizCreationActivity"
             android:label="@string/title_activity_quiz_creation"
-            android:parentActivityName=".ScrollingActivity">
+            android:parentActivityName=".ClassRoomActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.micha.cars.ScrollingActivity" />
+                android:value="com.example.micha.cars.ClassRoomActivity" />
         </activity>
         <activity
             android:name=".Quiz"
             android:label="@string/title_activity_quiz"
-            android:parentActivityName=".ScrollingActivity"
+            android:parentActivityName=".ClassRoomActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.micha.cars.ScrollingActivity" />
+                android:value="com.example.micha.cars.ClassRoomActivity" />
         </activity>
         <activity
             android:name=".Results"
@@ -73,7 +73,16 @@
         <activity
             android:name=".PostQuestion"
             android:label="@string/title_activity_post_question"
-            android:parentActivityName=".ClassPage"
+            android:parentActivityName=".QuestionsBoard"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.micha.cars.ClassPage" />
+        </activity>
+        <activity
+            android:name=".QuestionsBoard"
+            android:label="@string/title_activity_questions_board"
+            android:parentActivityName=".ClassRoomActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

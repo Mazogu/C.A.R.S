@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight = "5"
-    tools:context="com.example.micha.cars.ScrollingActivity"
+    tools:context="com.example.micha.cars.ClassRoomActivity"
     tools:showIn="@layout/activity_scrolling">
 
 </android.support.v4.widget.NestedScrollView>

@@ -183,4 +183,5 @@
     <string name="title_activity_quiz">Quiz</string>
     <string name="title_activity_results">Results</string>
     <string name="title_activity_post_question">PostQuestion</string>
+    <string name="title_activity_questions_board">QuestionsBoard</string>
 </resources>

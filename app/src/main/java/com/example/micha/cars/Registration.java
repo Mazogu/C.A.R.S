@@ -1,5 +1,6 @@
 package com.example.micha.cars;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -38,7 +39,6 @@ public class Registration extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        server = new Server();
         setContentView(R.layout.activity_registration);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -52,7 +52,7 @@ public class Registration extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                server.execute("");
+                attemptRegistration();
             }
         });
     }
@@ -61,18 +61,9 @@ public class Registration extends AppCompatActivity {
         String password = passwordView.getText().toString();
         String fname = FnameView.getText().toString();
         String lname = LnameView.getText().toString();
+        server = new Server(email,password,fname,lname);
         if(checkEmail(email)&&confirmPassword()){
-            try {
-                createUser(email,password,fname,lname);
-            }
-            catch(IOException e){
-                //button.setError("Registration failed");
-                return;
-            }
-            catch(JSONException i){
-                //button.setError("Registration failed");
-                return;
-            }
+                server.execute();
         }
     }
     protected boolean checkEmail(String email){
@@ -96,46 +87,55 @@ public class Registration extends AppCompatActivity {
         return true;
     }
     private class Server extends AsyncTask<String,Double,String>{
-
+        private final String email,password,fName,lName;
+        public Server(String email,String password,String fName, String lName){
+            this.email = email;
+            this.password = password;
+            this.fName = fName;
+            this.lName = lName;
+        }
         @Override
         protected String doInBackground(String... params) {
-            attemptRegistration();
+            url = null;
+            HttpURLConnection connection = null;
+            try {
+                url = new URL("http://ec2-35-160-178-210.us-west-2.compute.amazonaws.com:8080/login");
+                connection = (HttpURLConnection) url.openConnection();
+                OutputStream is = null;
+                connection.setReadTimeout(10000 /* milliseconds */);
+                connection.setConnectTimeout(15000 /* milliseconds */);
+                connection.setRequestMethod("POST");
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type","application/json");
+                connection.setRequestProperty("Host", "android.schoolportal.gr");
+                connection.connect();
+
+                String request = "{\"user\":\""+email+"\",\"pass\":\""+password+"\",\"toReg\":\""+1+"\",\"first\":\""+fName+"\",\"last\":\""+lName+"\"}";
+                is = connection.getOutputStream();
+                OutputStreamWriter out = new OutputStreamWriter(is);
+                out.write(request);
+                out.close();
+                String perhaps = connection.getResponseMessage();
+                Log.i(perhaps,"Dang");
+
+
+            }
+            catch(IOException e){
+                Log.i("Hmmm","Bleeeegh");
+            }
+            finally{
+                if(connection!=null)
+                    connection.disconnect();
+            }
             return null;
         }
-    }
-    protected void createUser(String email, String password, String fName, String lName) throws IOException,JSONException  {
-        url = null;
-        HttpURLConnection connection = null;
-        try {
-            url = new URL("http", "ec2-35-160-178-210.us-west-2.compute.amazonaws.com/login", 8080, "");
-            connection = (HttpURLConnection) url.openConnection();
-            OutputStream is = null;
-            connection.setReadTimeout(10000 /* milliseconds */);
-            connection.setConnectTimeout(15000 /* milliseconds */);
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type","application/json");
-            connection.setRequestProperty("Host", "android.schoolportal.gr");
-            connection.connect();
 
-            JSONObject info = new JSONObject();
-            info.put("email",email);
-            info.put("password",password);
-            info.put("toReg",1);
-            info.put("first",fName);
-            info.put("last",lName);
-            is = connection.getOutputStream();
-            Log.i("JSON",info.toString());
-            OutputStreamWriter out = new OutputStreamWriter(is);
-            out.write(info.toString());
-            out.close();
-
-
-        }
-        finally{
-            if(connection!=null)
-                connection.disconnect();
+        @Override
+        protected void onPostExecute(String s) {
+            Log.i(s,"Did it work?");
+            startActivity(new Intent(Registration.this,LoginActivity.class));
         }
     }
+
 
 }

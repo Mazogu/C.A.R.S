@@ -9,31 +9,22 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
-public class ScrollingActivity extends AppCompatActivity {
+public class QuestionsBoard extends AppCompatActivity {
     Button button;
-    Button button1;
-    View taView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scrolling);
+        setContentView(R.layout.activity_questions_board);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        button = (Button) findViewById(R.id.postbutton);
         setSupportActionBar(toolbar);
-        taView = findViewById(R.id.Ta);
-        taView.setVisibility(View.GONE);
-        button = (Button) findViewById(R.id.quizbutton);
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(ScrollingActivity.this,Quiz.class));
+                startActivity(new Intent(QuestionsBoard.this,PostQuestion.class));
             }
         });
-        button1 = (Button) findViewById(R.id.boardbutton);
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(ScrollingActivity.this,PostQuestion.class));
-            }
-        });
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 }

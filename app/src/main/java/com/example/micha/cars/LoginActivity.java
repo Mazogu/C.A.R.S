@@ -3,6 +3,7 @@ package com.example.micha.cars;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -19,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,9 +30,23 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import android.content.Intent;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -61,6 +77,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private URL url;
+    private String log;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,9 +162,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
         mEmailView.setError(null);
@@ -184,9 +199,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
+            //showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            mAuthTask.execute();
         }
     }
     private boolean isEmailValid(String email) {
@@ -202,6 +217,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Shows the progress UI and hides the login form.
      */
+    /**
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
@@ -234,7 +250,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
-
+    **/
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         return new CursorLoader(this,
@@ -293,7 +309,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<String, Double, String> {
 
         private final String mEmail;
         private final String mPassword;
@@ -304,46 +320,70 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
+        protected String doInBackground(String... params) {
+            url = null;
+            HttpURLConnection connection = null;
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+                url = new URL("http://ec2-35-160-178-210.us-west-2.compute.amazonaws.com:8080/login");
+                connection = (HttpURLConnection) url.openConnection();
+                OutputStream os = null;
+                InputStream is = null;
+                connection.setReadTimeout(10000 /* milliseconds */);
+                connection.setConnectTimeout(15000 /* milliseconds */);
+                connection.setRequestMethod("POST");
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type","application/json");
+                connection.setRequestProperty("Host", "android.schoolportal.gr");
+                connection.connect();
+                String first = "";
+                String last = "";
+                String request = "{\"user\":\""+mEmail+"\",\"pass\":\""+mPassword+"\",\"toReg\":\""+"0"+"\",\"first\":\""+first+"\",\"last\":\""+last+"\"}";
+                os = connection.getOutputStream();
+                OutputStreamWriter out = new OutputStreamWriter(os);
+                out.write(request);
+                out.close();
+                String maybe = connection.getResponseMessage();
+                is = connection.getInputStream();
+                InputStreamReader in = new InputStreamReader(is);
+                BufferedReader reader = new BufferedReader(in);
+                StringBuilder result = new StringBuilder();
+                String line;
+                while((line = reader.readLine()) != null) {
+                    result.append(line);
                 }
+                log = result.toString();
             }
-
-            // TODO: register the new account here.
-            return true;
+            catch(IOException e){
+                Log.i("Darn",e.toString());
+            }
+            finally{
+                if(connection!=null)
+                    connection.disconnect();
+            }
+            return null;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                startActivity(new Intent(LoginActivity.this,ClassPage.class));;
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
+        protected void onPostExecute(final String success) {
+            determineLogIn(log);
+            //Log.i(success,"Yay");
+            //startActivity(new Intent(LoginActivity.this,ClassPage.class));;
         }
 
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
+
+    }
+    protected void determineLogIn(String result){
+        if(result.contentEquals("1")){
+            Intent intent = new Intent(LoginActivity.this,ClassPage.class);
+            intent.putExtra("username",mEmailView.getText());
+            startActivity(intent);
+        }
+        else{
+            Toast toast = Toast.makeText(LoginActivity.this,result,Toast.LENGTH_SHORT);
+            toast.show();
+            Log.i("testing",result);
         }
     }
+
 }
 
