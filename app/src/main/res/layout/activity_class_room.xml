@@ -80,7 +80,12 @@
             </LinearLayout>
 
         </LinearLayout>
-
+        <Button
+        android:text="Create Quiz"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:id="@+id/quizbutton" />
         <Button
             android:text="Questions Board"
             android:layout_width="match_parent"

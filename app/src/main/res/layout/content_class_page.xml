@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,41 +8,9 @@
     tools:context="com.example.micha.cars.ClassPage"
     tools:showIn="@layout/activity_class_page">
 
-    <LinearLayout
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text = "Quantum Theory"
-            android:id="@+id/gobutton" />
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text = "Differential Equations"/>
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height= "50dp"
-            android:text = "Databases" />
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text = "Java" />
-            />
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text = "Earth Science" />/>
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text = "English" />
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text = "Calculus" />
+        android:id="@android:id/list"></ListView>
 
-    </LinearLayout>
-
-</android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>
