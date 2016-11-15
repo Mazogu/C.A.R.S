@@ -1,21 +1,21 @@
 package com.example.micha.cars;
 
 import android.annotation.TargetApi;
-import android.app.ListActivity;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
-
-import org.apache.commons.lang3.StringEscapeUtils;
+import android.widget.EditText;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,37 +26,41 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class ClassPage extends ListActivity {
-    private String username;
+public class AddClass extends Activity {
+    EditText classname;
+    Button add;
     URL url;
-    ClassesTask server;
     String responseString;
-    Button newClass;
-    ListView list;
+    String username;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_class_page);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        Bundle extras = getIntent().getExtras();
-        if(extras != null)
-            username = extras.getString("username");
-        server = new ClassesTask(username);
-        server.execute();
-        newClass = (Button) findViewById(R.id.createclass);
-        newClass.setOnClickListener(new View.OnClickListener() {
+        setContentView(R.layout.activity_add_class);
+        add = (Button) findViewById(R.id.addclass);
+        classname = (EditText) findViewById(R.id.classname);
+        Bundle extra = getIntent().getExtras();
+        if(extra !=null)
+            username = extra.getString("username");
+        DisplayMetrics m = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(m);
+        int width = m.widthPixels;
+        int height = m.heightPixels;
+        getWindow().setLayout((int) Math.round(width * .8),(int) Math.round(height*.4));
+        add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ClassPage.this,AddClass.class);
-                intent.putExtra("username",username);
-                startActivity(intent);
+                ClassesTask server = new ClassesTask(username,classname.getText().toString());
+                server.execute();
             }
         });
+
     }
+
     private class ClassesTask extends AsyncTask<String,Double,String> {
-        private final String user;
-        public ClassesTask(String user){
+        private final String user,classRoom;
+        public ClassesTask(String user,String classname){
             this.user = user;
+            this.classRoom = classname;
         }
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
@@ -75,7 +79,7 @@ public class ClassPage extends ListActivity {
                 connection.setRequestProperty("Content-Type","application/json");
                 connection.setRequestProperty("Host", "android.schoolportal.gr");
                 connection.connect();
-                String request = "{\"user\":\""+user+"\",\"teacher\":\""+"0"+"\",\"class\":\""+""+"\",\"new\":\""+"0"+"\"}";
+                String request = "{\"user\":\""+user+"\",\"teacher\":\""+"1"+"\",\"class\":\""+classRoom+"\",\"new\":\""+"1"+"\"}";
                 request = Html.escapeHtml(request);
                 os = connection.getOutputStream();
                 OutputStreamWriter out = new OutputStreamWriter(os);
@@ -103,28 +107,15 @@ public class ClassPage extends ListActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            //Log.i("Server",s);
-            populate(responseString);
+            if(responseString.contentEquals("1")) {
+                Intent intent = new Intent(AddClass.this, ClassPage.class);
+                intent.putExtra("username", username);
+                startActivity(intent);
+            }
+            else{
+                Log.i("Didn't work",responseString);
+            }
         }
-    }
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    protected void populate(String parse){
-        String[] classes = parse.split(">");
-        for(int i = 0;i < classes.length;i++){
-            classes[i] = StringEscapeUtils.unescapeHtml3(classes[i]);
-        }
-        setListAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,classes));
-        getListView().setTextFilterEnabled(true);
     }
 
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l,v,position,id);
-        String classroom = getListView().getItemAtPosition(position).toString();
-        Log.i("Confused",classroom);
-        Intent intent = new Intent(ClassPage.this,ClassRoomActivity.class);
-        intent.putExtra("username",username);
-        intent.putExtra("class",classroom);
-        startActivity(intent);
-    }
 }

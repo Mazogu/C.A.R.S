@@ -97,6 +97,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.micha.cars.ClassPage" />
         </activity>
+        <activity
+            android:name=".AddClass"
+            android:label="@string/title_activity_add_class"
+            android:parentActivityName=".ClassPage"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.micha.cars.ClassPage" />
+        </activity>
     </application>
 
 </manifest>

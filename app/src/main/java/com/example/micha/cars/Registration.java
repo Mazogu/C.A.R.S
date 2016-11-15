@@ -1,23 +1,29 @@
 package com.example.micha.cars;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -36,6 +42,7 @@ public class Registration extends AppCompatActivity {
     private EditText confirmView;
     private Button button;
     private Server server;
+    String responseString;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +55,6 @@ public class Registration extends AppCompatActivity {
         LnameView = (EditText) findViewById(R.id.lName);
         confirmView = (EditText) findViewById(R.id.confirm);
         button = (Button) findViewById(R.id.register);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,6 +100,7 @@ public class Registration extends AppCompatActivity {
             this.fName = fName;
             this.lName = lName;
         }
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
         protected String doInBackground(String... params) {
             url = null;
@@ -101,7 +108,7 @@ public class Registration extends AppCompatActivity {
             try {
                 url = new URL("http://ec2-35-160-178-210.us-west-2.compute.amazonaws.com:8080/login");
                 connection = (HttpURLConnection) url.openConnection();
-                OutputStream is = null;
+                OutputStream os = null;
                 connection.setReadTimeout(10000 /* milliseconds */);
                 connection.setConnectTimeout(15000 /* milliseconds */);
                 connection.setRequestMethod("POST");
@@ -111,12 +118,20 @@ public class Registration extends AppCompatActivity {
                 connection.connect();
 
                 String request = "{\"user\":\""+email+"\",\"pass\":\""+password+"\",\"toReg\":\""+1+"\",\"first\":\""+fName+"\",\"last\":\""+lName+"\"}";
-                is = connection.getOutputStream();
-                OutputStreamWriter out = new OutputStreamWriter(is);
+                request = Html.escapeHtml(request);
+                os = connection.getOutputStream();
+                OutputStreamWriter out = new OutputStreamWriter(os);
                 out.write(request);
                 out.close();
-                String perhaps = connection.getResponseMessage();
-                Log.i(perhaps,"Dang");
+                InputStream is = connection.getInputStream();
+                InputStreamReader in = new InputStreamReader(is);
+                BufferedReader reader = new BufferedReader(in);
+                StringBuilder result = new StringBuilder();
+                String line;
+                while((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
+                responseString = result.toString();
 
 
             }
@@ -132,8 +147,11 @@ public class Registration extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i(s,"Did it work?");
-            startActivity(new Intent(Registration.this,LoginActivity.class));
+            if(responseString.contentEquals("1")){
+                startActivity(new Intent(Registration.this,LoginActivity.class));
+            }
+            Toast toast = Toast.makeText(Registration.this,responseString,Toast.LENGTH_SHORT);
+            toast.show();
         }
     }
 

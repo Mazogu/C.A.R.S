@@ -39,10 +39,11 @@
         android:orientation="horizontal"
         android:layout_gravity="bottom">
         <Button
+            android:text = "Create Class"
             android:layout_height="40dp"
             android:layout_width = "0dp"
             android:layout_weight="1"
-            android:id="@+id/button4" />
+            android:id="@+id/createclass" />
         <Button
             android:layout_height="40dp"
             android:layout_width = "0dp"
