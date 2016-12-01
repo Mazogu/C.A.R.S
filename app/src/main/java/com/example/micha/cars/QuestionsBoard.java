@@ -120,15 +120,24 @@ public class QuestionsBoard extends ListActivity {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     protected void populate(String parse){
         String[] questions = parse.split(">");
+        String[] parted = new String[questions.length];
         for(int i = 0;i < questions.length;i++){
             questions[i] = StringEscapeUtils.unescapeHtml3(questions[i]);
+            String[] temp = questions[i].split("<");
+            parted[i] = temp[0];
         }
-        setListAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,questions));
+        setListAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,parted));
         getListView().setTextFilterEnabled(true);
     }
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-
+        super.onListItemClick(l,v,position,id);
+        String question = getListView().getItemAtPosition(position).toString();
+        Intent intent = new Intent(QuestionsBoard.this,ViewQuestion.class);
+        intent.putExtra("username",user);
+        intent.putExtra("class",classroom);
+        intent.putExtra("question",question);
+        startActivity(intent);
     }
 }

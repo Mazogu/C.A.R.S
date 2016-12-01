@@ -45,14 +45,6 @@
             android:label="@string/title_activity_class_page"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".QuizCreationActivity"
-            android:label="@string/title_activity_quiz_creation"
-            android:parentActivityName=".ClassRoomActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.micha.cars.ClassRoomActivity" />
-        </activity>
-        <activity
             android:name=".Quiz"
             android:label="@string/title_activity_quiz"
             android:parentActivityName=".ClassRoomActivity"
@@ -106,6 +98,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.micha.cars.ClassPage" />
         </activity>
+        <activity
+            android:name=".ViewQuestion"
+            android:label="@string/title_activity_view_question"
+            android:parentActivityName=".ClassRoomActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.micha.cars.ClassRoomActivity" />
+        </activity>
+        <activity android:name=".RegisterClass" />
+        <activity android:name=".QuizName"></activity>
     </application>
 
 </manifest>

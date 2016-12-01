@@ -5,11 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.micha.cars.Quiz">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"><android.support.design.widget.AppBarLayout
+    tools:context="com.example.micha.cars.ViewQuestion">
+
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -20,21 +18,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
-
     </android.support.design.widget.AppBarLayout>
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
-        android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:layout_weight="1">
-    </android.support.v4.view.ViewPager>
-    <Button
-        android:text="Submit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity = "center"
-        android:id="@+id/questionbutton"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
-    </LinearLayout>
+
+    <include layout = "@layout/content_view_question"/>
+
 </android.support.design.widget.CoordinatorLayout>

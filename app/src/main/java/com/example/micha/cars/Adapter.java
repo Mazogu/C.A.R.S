@@ -15,12 +15,12 @@ public class Adapter extends FragmentPagerAdapter {
     }
     @Override
     public Fragment getItem(int position) {
-        Fragment fragment = new QuizFragment();
+        //Fragment fragment = new QuizFragment();
         Bundle args = new Bundle();
         // Our object is just an integer :-P
         args.putInt("Whatever", position + 1);
-        fragment.setArguments(args);
-        return fragment;
+        //fragment.setArguments(args);
+        return null;
 
     }
 

@@ -2,6 +2,7 @@ package com.example.micha.cars;
 
 import android.annotation.TargetApi;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -11,9 +12,12 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -25,6 +29,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class ClassPage extends ListActivity {
     private String username;
@@ -32,6 +37,7 @@ public class ClassPage extends ListActivity {
     ClassesTask server;
     String responseString;
     Button newClass;
+    Button register;
     ListView list;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +50,19 @@ public class ClassPage extends ListActivity {
         server = new ClassesTask(username);
         server.execute();
         newClass = (Button) findViewById(R.id.createclass);
+        register = (Button) findViewById(R.id.registerclass);
         newClass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ClassPage.this,AddClass.class);
+                intent.putExtra("username",username);
+                startActivity(intent);
+            }
+        });
+        register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ClassPage.this,RegisterClass.class);
                 intent.putExtra("username",username);
                 startActivity(intent);
             }
@@ -104,27 +119,89 @@ public class ClassPage extends ListActivity {
         @Override
         protected void onPostExecute(String s) {
             //Log.i("Server",s);
+            Log.i("Just checking",responseString);
             populate(responseString);
         }
     }
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     protected void populate(String parse){
         String[] classes = parse.split(">");
-        for(int i = 0;i < classes.length;i++){
-            classes[i] = StringEscapeUtils.unescapeHtml3(classes[i]);
+        ArrayList<Classes> classList = new ArrayList<Classes>();
+        if(classes.length > 0) {
+            for (int i = 0; i < classes.length; i++) {
+                classes[i] = StringEscapeUtils.unescapeHtml3(classes[i]);
+                String[] info = classes[i].split("<");
+                boolean teacher = false;
+                if(info.length>1) {
+                    if (info[1].contentEquals("1"))
+                        teacher = true;
+                    classList.add(new Classes(info[0], teacher));
+                }
+            }
         }
-        setListAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,classes));
+        setListAdapter(new ClassAdapter(this,android.R.layout.simple_list_item_2,android.R.id.text1,classList));
         getListView().setTextFilterEnabled(true);
     }
+    private class Classes{
+        private final String className;
+        private final boolean teacher;
+        public Classes(String className,boolean teacher){
+            this.className = className;
+            this.teacher = teacher;
+        }
+        public String getClassname(){
+            return className;
+        }
+        public boolean getTeacher(){
+            return teacher;
+        }
+    }
+    private class ClassAdapter extends ArrayAdapter{
+        ArrayList<Classes> rooms;
+        public ClassAdapter(Context context, int resource, int viewId, ArrayList<Classes> rooms) {
+            super(context, resource, viewId, rooms);
+            this.rooms = rooms;
+        }
 
+        @Override
+        public Object getItem(int position) {
+            return rooms.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = super.getView(position,convertView,parent);
+            TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+            TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+            if(!rooms.isEmpty()) {
+                text1.setText(rooms.get(position).getClassname());
+                if (rooms.get(position).getTeacher()) {
+                    text2.setText("Teacher");
+                } else {
+                    text2.setText("Student");
+                }
+            }
+            return view;
+        }
+
+        @Override
+        public int getCount() {
+            return rooms.size();
+        }
+    }
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l,v,position,id);
-        String classroom = getListView().getItemAtPosition(position).toString();
-        Log.i("Confused",classroom);
+        Classes classroom = (Classes) getListView().getItemAtPosition(position);
         Intent intent = new Intent(ClassPage.this,ClassRoomActivity.class);
         intent.putExtra("username",username);
-        intent.putExtra("class",classroom);
+        intent.putExtra("class",classroom.getClassname());
+        intent.putExtra("teacher",classroom.getTeacher());
         startActivity(intent);
     }
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Stuff"
+        android:gravity="end"
+        android:id="@+id/postTime"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="I'm going to write an entire paragraph to see what this looks like. It's very small."
+        android:textSize="16dp"
+        android:id="@+id/post"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="By Anonymous"
+        android:id = "@+id/poster"/>
+</LinearLayout>

@@ -323,7 +323,7 @@ public class LoginActivity extends AppCompatActivity{
     }
     protected void determineLogIn(String result){
         if(result != null) {
-            if (result.contentEquals("1")) {
+            if (result.contains("1")) {
                 Intent intent = new Intent(LoginActivity.this, ClassPage.class);
                 intent.putExtra("username", mEmailView.getText().toString());
                 startActivity(intent);

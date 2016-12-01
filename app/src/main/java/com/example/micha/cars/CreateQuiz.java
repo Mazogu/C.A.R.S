@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,6 +32,8 @@ import java.net.URL;
 public class CreateQuiz extends AppCompatActivity {
     private String username;
     private String quiz;
+    private String quizName;
+    private String duration;
     private String classroom;
     private EditText question;
     private EditText answer1;
@@ -52,6 +55,8 @@ public class CreateQuiz extends AppCompatActivity {
             username = extra.getString("username");
             classroom = extra.getString("class");
             quiz = extra.getString("quiz");
+            quizName = extra.getString("quizname");
+            duration = extra.getString("duration");
         }
         add = (Button) findViewById(R.id.addquestion);
         submit = (Button) findViewById(R.id.submit);
@@ -73,17 +78,26 @@ public class CreateQuiz extends AppCompatActivity {
                 a3 = Html.escapeHtml(answer3.getText().toString());
                 a4 = Html.escapeHtml(answer4.getText().toString());
                 int answer = group.getCheckedRadioButtonId();
-                RadioButton selected = (RadioButton)findViewById(answer);
-                String correct = Html.escapeHtml(selected.getText().toString());
-                Log.i("What is Correct?",correct);
-                QuizTask task = new QuizTask(q,a1,a2,a3,a4,correct);
-                task.execute();
+                if(answer!=-1) {
+                    RadioButton selected = (RadioButton) findViewById(answer);
+                    String correct = Html.escapeHtml(selected.getText().toString());
+                    Log.i("What is Correct?", correct);
+                    QuizTask task = new QuizTask(q, a1, a2, a3, a4, correct);
+                    task.execute();
+                }
+                else{
+                    Toast toast = Toast.makeText(CreateQuiz.this, "Pick an answer", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
             }
         });
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(CreateQuiz.this,ClassRoomActivity.class);
+                intent.putExtra("username",username);
+                intent.putExtra("class",classroom);
+                startActivity(intent);
             }
         });
 
@@ -122,7 +136,7 @@ public class CreateQuiz extends AppCompatActivity {
                 connection.setRequestProperty("Content-Type","application/json");
                 connection.setRequestProperty("Host", "android.schoolportal.gr");
                 connection.connect();
-                String request = "{\"class\":\""+classroom+"\",\"new\":\""+"1"+"\",\"Quiz\":\""+quiz+"\",\"question\":\""+thisQuestion+"\",\"answerA\":\""+a1+"\",\"answerB\":\""+a2+"\",\"answerC\":\""+a3+"\",\"answerD\":\""+a4+"\",\"correct\":\""+correct+"\"}";
+                String request = "{\"class\":\""+classroom+"\",\"new\":\""+"1"+"\",\"quiz\":\""+quiz+"\",\"question\":\""+thisQuestion+"\",\"answerA\":\""+a1+"\",\"answerB\":\""+a2+"\",\"answerC\":\""+a3+"\",\"answerD\":\""+a4+"\",\"correct\":\""+correct+"\"}";
                 request = Html.escapeHtml(request);
                 os = connection.getOutputStream();
                 OutputStreamWriter out = new OutputStreamWriter(os);
@@ -151,7 +165,12 @@ public class CreateQuiz extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            //Log.i("Hope",responseString);
+            answer1.setText("");
+            answer2.setText("");
+            answer3.setText("");
+            answer4.setText("");
+            question.setText("");
+            group.clearCheck();
         }
     }
 }
